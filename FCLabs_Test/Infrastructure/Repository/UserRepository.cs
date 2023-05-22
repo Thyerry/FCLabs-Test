@@ -57,6 +57,15 @@ namespace Infrastructure.Repository
             }
         }
 
+
+        public async Task<User> GetByUserId(string userId)
+        {
+            using (var database = new BaseContext(_options))
+            {
+                return await database.User.FirstOrDefaultAsync(u => u.UserId == userId);
+            }
+        }
+
         #region Disposed https://docs.microsoft.com/pt-br/dotnet/standard/garbage-collection/implementing-dispose
 
         // Flag: Has Dispose already been called?
@@ -87,6 +96,7 @@ namespace Infrastructure.Repository
 
             disposed = true;
         }
+
 
         #endregion Disposed https://docs.microsoft.com/pt-br/dotnet/standard/garbage-collection/implementing-dispose
     }

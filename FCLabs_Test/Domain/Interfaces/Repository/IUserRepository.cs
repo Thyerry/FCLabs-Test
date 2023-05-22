@@ -9,4 +9,5 @@ public interface IUserRepository
     Task Delete(User user);
     Task<List<User>> ListUsers(int page);
     Task<List<User>> FilterUsers();
+    Task<User> GetByUserId(string userId);
 }

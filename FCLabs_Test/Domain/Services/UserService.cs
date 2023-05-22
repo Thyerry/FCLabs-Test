@@ -8,6 +8,7 @@ namespace Domain.Services
     {
         private readonly IUserRepository _userRepository;
         private int usersPerPage = 10;
+
         public UserService(IUserRepository userRepository)
         {
             _userRepository = userRepository ?? throw new ArgumentNullException(nameof(userRepository));
@@ -26,6 +27,11 @@ namespace Domain.Services
         public Task<List<User>> FilterUsers()
         {
             throw new NotImplementedException();
+        }
+
+        public async Task<User> GetByUserId(string userId)
+        {
+            return await _userRepository.GetByUserId(userId);
         }
 
         public async Task<List<User>> ListUsers(int page)
