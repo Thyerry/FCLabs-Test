@@ -36,8 +36,8 @@ public class LoginController : ControllerBase
 
     [AllowAnonymous]
     [Produces("application/json")]
-    [HttpPost("Login")]
-    public async Task<IActionResult> Login([FromBody] LoginRequest login)
+    [HttpPost("CreateLoginToken")]
+    public async Task<IActionResult> CreateLoginToken([FromBody] LoginRequest login)
     {
         if (string.IsNullOrWhiteSpace(login.userName) || string.IsNullOrWhiteSpace(login.password))
             return BadRequest("The user name and the password fields cannot be blank");
@@ -59,7 +59,7 @@ public class LoginController : ControllerBase
             .AddSubject("FCLabs challenge")
             .AddIssuer("Thyerry.Nunes")
             .AddAudience("FCLab.Recruit.Team")
-            .AddClaim("UsuarioAPINumero", "1")
+            .AddClaim("UserApi", "1")
             .AddExpiry(ADayInMinutes)
             .Builder();
 
@@ -68,40 +68,41 @@ public class LoginController : ControllerBase
 
     [AllowAnonymous]
     [Produces("application/json")]
-    [HttpPost("Register")]
-    public async Task<IActionResult> Register([FromBody] UserModel register)
+    [HttpPost("RegisterUserLogin")]
+    public async Task<IActionResult> RegisterUserLogin([FromBody] UserModel user)
     {
-        if (string.IsNullOrWhiteSpace(register.Login)
-            || string.IsNullOrWhiteSpace(register.Email)
-            || string.IsNullOrWhiteSpace(register.ConfirmPassword)
-            || string.IsNullOrWhiteSpace(register.Password))
+        if (string.IsNullOrWhiteSpace(user.Login)
+            || string.IsNullOrWhiteSpace(user.Email)
+            || string.IsNullOrWhiteSpace(user.ConfirmPassword)
+            || string.IsNullOrWhiteSpace(user.Password))
             return BadRequest("Some of the fields are empty");
 
-        if (register.Password != register.ConfirmPassword)
+        if (user.Password != user.ConfirmPassword)
             return BadRequest("Passwords don't match");
 
-        var userLogin = new ApplicationUser
+        var newUser = new ApplicationUser
         {
-            UserName = register.Login,
-            Email = register.Email,
-            CPF = register.CPF,
+            UserName = user.Login,
+            Email = user.Email,
+            CPF = user.CPF,
         };
-
-        var user = _mapper.Map<User>(register);
 
         try
         {
-            await _userService.AddUser(user);
-            var result = await _userManager.CreateAsync(userLogin, register.Password);
+            var result = await _userManager.CreateAsync(newUser, user.Password);
+
             if (!result.Succeeded)
-                throw new BadHttpRequestException("Couldn't Register User");
-        
-            return Ok("User Registred");
+                return BadRequest(result.Errors);
+
+            var userRegistered = await _userManager.FindByEmailAsync(user.Email);
+            user.UserId = userRegistered.Id;
+            await _userService.AddUser(user);
+            return Ok("User Registered Successfully");
         }
         catch (Exception ex)
         {
-            await _userManager.DeleteAsync(userLogin);
             await _userService.Delete(user);
+            await _userManager.DeleteAsync(newUser);
             return BadRequest(ex.Message);
         }
 

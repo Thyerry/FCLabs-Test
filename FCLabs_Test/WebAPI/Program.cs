@@ -60,8 +60,6 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                  };
              });
 
-//builder.Services.AddAuthorization();
-
 // Dependency injections
 // Service
 builder.Services.AddSingleton<IUserService, UserService>();

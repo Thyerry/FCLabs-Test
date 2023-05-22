@@ -5,6 +5,7 @@ namespace Entities.Entities;
 [Table("User")]
 public class User
 {
+    public string? UserId { get; set; }
     public int Id { get; set; }
     public int Status { get; set; }
     public string Name { get; set; }
@@ -17,9 +18,4 @@ public class User
     public string MotherName { get; set; }
     public DateTime InclusionDate { get; set; }
     public DateTime LastChangeDate { get; set; }
-
-    [ForeignKey("ApplicationUser")]
-    [Column(Order = 0)]
-    public string UserId { get; set; }
-    public virtual ApplicationUser ApplicationUser { get; set; }
 }

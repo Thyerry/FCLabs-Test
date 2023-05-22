@@ -1,13 +1,20 @@
-﻿using Entities.Entities;
+﻿using Domain.Models;
 
 namespace Domain.Interfaces.Service;
 
 public interface IUserService
 {
-    Task AddUser(User user);
-    Task UpdateUser(User user);
-    Task Delete(User user);
-    Task<List<User>> ListUsers(int page);
-    Task<List<User>> FilterUsers();
-    Task<User> GetByUserId(string id);
+    Task AddUser(UserModel user);
+
+    Task UpdateUser(UserModel user);
+
+    Task Delete(UserModel user);
+
+    Task InactivateUser(UserModel user);
+
+    Task<List<UserModel>> ListUsers(int page);
+
+    Task<List<UserModel>> FilterUsers();
+
+    Task<UserModel> GetByUserId(string id);
 }
