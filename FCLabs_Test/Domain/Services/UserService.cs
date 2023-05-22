@@ -7,20 +7,20 @@ namespace Domain.Services
     public class UserService : IUserService
     {
         private readonly IUserRepository _userRepository;
-
+        private int usersPerPage = 10;
         public UserService(IUserRepository userRepository)
         {
             _userRepository = userRepository ?? throw new ArgumentNullException(nameof(userRepository));
         }
 
-        public Task AddUser(User user)
+        public async Task AddUser(User user)
         {
-            throw new NotImplementedException();
+            await _userRepository.AddUser(user);
         }
 
-        public Task Delete(User user)
+        public async Task Delete(User user)
         {
-            throw new NotImplementedException();
+            await _userRepository.Delete(user);
         }
 
         public Task<List<User>> FilterUsers()
@@ -28,14 +28,16 @@ namespace Domain.Services
             throw new NotImplementedException();
         }
 
-        public Task<List<User>> ListUsers(int page)
+        public async Task<List<User>> ListUsers(int page)
         {
-            throw new NotImplementedException();
+            var usersToSkip = page * usersPerPage;
+            var users = await _userRepository.ListUsers(page);
+            return users.Skip(usersToSkip).Take(usersPerPage).ToList();
         }
 
-        public Task UpdateUser(User user)
+        public async Task UpdateUser(User user)
         {
-            throw new NotImplementedException();
+            await _userRepository.UpdateUser(user);
         }
     }
 }

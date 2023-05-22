@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Identity;
 using Domain.Interfaces.Service;
 using Domain.Services;
 using Domain.Interfaces.Repository;
+using Entities.Entities;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -19,7 +20,7 @@ builder.Services.AddDbContext<BaseContext>(options =>
             options.UseSqlServer(
                 builder.Configuration.GetConnectionString("DefaultConnection")));
 
-builder.Services.AddDefaultIdentity<IdentityUser>
+builder.Services.AddDefaultIdentity<ApplicationUser>
     (options => options.SignIn.RequireConfirmedAccount = false)
     .AddEntityFrameworkStores<BaseContext>();
 

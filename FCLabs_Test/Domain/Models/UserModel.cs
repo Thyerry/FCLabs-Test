@@ -1,9 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿namespace Domain.Models;
 
-namespace Entities.Entities;
-
-[Table("User")]
-public class User
+public class UserModel
 {
     public int Id { get; set; }
     public int Status { get; set; }
@@ -15,11 +12,4 @@ public class User
     public string CPF { get; set; }
     public DateTime BirthDate { get; set; }
     public string MotherName { get; set; }
-    public DateTime InclusionDate { get; set; }
-    public DateTime LastChangeDate { get; set; }
-
-    [ForeignKey("ApplicationUser")]
-    [Column(Order = 0)]
-    public string UserId { get; set; }
-    public virtual ApplicationUser ApplicationUser { get; set; }
 }
