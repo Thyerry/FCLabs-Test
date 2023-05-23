@@ -22,6 +22,7 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+#region Database
 builder.Services.AddDbContext<BaseContext>(options =>
             options.UseSqlServer(
                 builder.Configuration.GetConnectionString("DefaultConnection")));
@@ -29,7 +30,9 @@ builder.Services.AddDbContext<BaseContext>(options =>
 builder.Services.AddDefaultIdentity<ApplicationUser>
     (options => options.SignIn.RequireConfirmedAccount = false)
     .AddEntityFrameworkStores<BaseContext>();
+#endregion
 
+#region Jwt
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
              .AddJwtBearer(option =>
              {
@@ -59,15 +62,18 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                      }
                  };
              });
+#endregion
 
-// Dependency injections
+#region Dependency injections
 // Service
 builder.Services.AddSingleton<IUserService, UserService>();
 
 // Repository
 builder.Services.AddSingleton<IUserRepository, UserRepository>();
 
-// Mapper
+#endregion
+
+#region Mapper
 var mapperConfig = new AutoMapper.MapperConfiguration(cfg =>
 {
     cfg.CreateMap<User, UserModel>();
@@ -76,6 +82,12 @@ var mapperConfig = new AutoMapper.MapperConfiguration(cfg =>
 
 IMapper mapper = mapperConfig.CreateMapper();
 builder.Services.AddSingleton(mapper);
+#endregion
+
+#region Cors
+builder.Services.AddCors();
+#endregion
+
 
 var app = builder.Build();
 
@@ -85,6 +97,13 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+app.UseCors(c =>
+{
+    c.AllowAnyHeader();
+    c.AllowAnyMethod();
+    c.AllowAnyOrigin();
+});
+
 
 app.UseHttpsRedirection();
 
