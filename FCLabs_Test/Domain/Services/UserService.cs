@@ -44,12 +44,20 @@ namespace Domain.Services
             return _mapper.Map<UserModel>(user);
         }
 
-        public async Task<List<UserModel>> ListUsers(int page)
+        public async Task<ListUsersResponse> ListUsers(int page)
         {
             var usersToSkip = (page - 1) * usersPerPage;
             var users = await _userRepository.ListUsers(page);
+            var totalUsers = users.Count();
             var usersToReturn = users.Skip(usersToSkip).Take(usersPerPage).ToList();
-            return _mapper.Map<List<UserModel>>(usersToReturn);
+
+            return new ListUsersResponse()
+            {
+                Users = _mapper.Map<List<UserModel>>(usersToReturn),
+                CurrentPage = page,
+                TotalPages = (int)Math.Ceiling((decimal)totalUsers / usersPerPage),
+                TotalUsers = totalUsers
+            };
         }
 
         public async Task UpdateUser(UserModel user)

@@ -12,7 +12,7 @@ public interface IUserService
 
     Task InactivateUser(UserModel user);
 
-    Task<List<UserModel>> ListUsers(int page);
+    Task<ListUsersResponse> ListUsers(int page);
 
     Task<List<UserModel>> FilterUsers();
 
