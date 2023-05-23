@@ -14,4 +14,6 @@ public class UserModel
     public DateTime? BirthDate { get; set; }
     public string? MotherName { get; set; }
     public int? Status { get; set; }
+    public DateTime InclusionDate { get; set; }
+    public DateTime LastChangeDate { get; set; }
 }

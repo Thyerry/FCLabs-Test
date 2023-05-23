@@ -1,5 +1,4 @@
 .user-list-container {
-    max-width: 600px;
     margin: 0 auto;
     padding: 20px;
   }
@@ -25,3 +24,10 @@
       text-align: left;
     }
   }
+.action-button-edit {
+    background-color: #0024ff88;
+}
+
+.action-button-delete {
+    background-color: #ff240088;
+}

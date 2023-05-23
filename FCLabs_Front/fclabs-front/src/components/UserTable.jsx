@@ -12,13 +12,24 @@ const UserTable = ( { users }) => {
 
   const columns = useMemo(
     () => [
-      { Header: 'Nome', accessor: 'name' },
+      { Header: 'Nome', accessor: 'name',},
       { Header: 'CPF', accessor: 'cpf' },
       { Header: 'Email', accessor: 'email' },
       { Header: 'Telefone', accessor: 'phone' },
       { Header: 'Login', accessor: 'login', },
       { Header: 'Situação', accessor: 'status', },
       { Header: 'Nascimento', accessor: 'birthDate', },
+      { Header: 'Adicionado', accessor: 'inclusionDate', },
+      { Header: 'Ultima Alteração', accessor: 'lastChangeDate', },
+      {
+        Header: 'Ações',
+        Cell: () => (
+          <div>
+            <button className="action-button-edit">✍</button>
+            <button className="action-button-delete">❌</button>
+          </div>
+        ),
+      },
     ],
     []
   );
