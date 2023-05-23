@@ -10,7 +10,7 @@ using WebAPI.Token;
 
 namespace WebAPI.Controllers;
 
-[Route("/api/v1/[controller]")]
+[Route("[controller]")]
 [ApiController]
 public class LoginController : ControllerBase
 {
