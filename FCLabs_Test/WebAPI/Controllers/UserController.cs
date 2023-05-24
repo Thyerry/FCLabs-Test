@@ -1,5 +1,6 @@
 ﻿using Domain.Interfaces.Service;
 using Domain.Models;
+using Domain.Models.ListUser;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -67,11 +68,11 @@ public class UserController : ControllerBase
 
     [HttpGet]
     [Produces("application/json")]
-    public async Task<IActionResult> ListUsers(int page)
+    public async Task<IActionResult> ListUsers(ListUsersRequest request)
     {
         try
         {
-            var result = await _userService.ListUsers(page);
+            var result = await _userService.ListUsers(request);
             return Ok(result);
         }
         catch (Exception ex)

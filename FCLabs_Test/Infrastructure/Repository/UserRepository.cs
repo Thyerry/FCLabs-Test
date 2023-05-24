@@ -1,9 +1,12 @@
 ﻿using Domain.Interfaces.Repository;
+using Domain.Models.ListUser;
 using Entities.Entities;
+using Entities.Enums;
 using Infrastructure.Configuration;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Win32.SafeHandles;
 using System.Runtime.InteropServices;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace Infrastructure.Repository;
 
@@ -25,16 +28,50 @@ public class UserRepository : IUserRepository, IDisposable
         }
     }
 
-    public async Task<List<User>> FilterUsers()
-    {
-        throw new NotImplementedException();
-    }
-
-    public async Task<List<User>> ListUsers(int page)
+    public async Task<List<User>> ListUsers(ListUsersQueryParameters parameters)
     {
         using (var database = new BaseContext(_options))
         {
-            return await database.User.ToListAsync();
+            var query = database.User.AsQueryable();
+
+            if (parameters.ReturnActive != parameters.ReturnInactive)
+            {
+                if (parameters.ReturnActive)
+                    query = query.Where(u => u.Status == (int)StatusEnum.ACTIVE);
+                else
+                    query = query.Where(u => u.Status == (int)StatusEnum.INACTIVE);
+            }
+
+            if (!string.IsNullOrWhiteSpace(parameters.Name))
+                query = query.Where(u => u.Name.Contains(parameters.Name));
+
+            if (!string.IsNullOrWhiteSpace(parameters.CPF))
+                query = query.Where(u => u.CPF == parameters.CPF);
+
+            if (!string.IsNullOrWhiteSpace(parameters.Login))
+                query = query.Where(u => u.Login == parameters.Login);
+
+            if (parameters.BirthDateRange != null)
+                query = query.Where(u =>
+                                u.BirthDate >= parameters.BirthDateRange.Start &&
+                                u.BirthDate <= parameters.BirthDateRange.End);
+
+            if (parameters.AgeDateRange != null)
+                query = query.Where(u =>
+                                u.BirthDate >= parameters.AgeDateRange.Start &&
+                                u.BirthDate <= parameters.AgeDateRange.End);
+
+            if (parameters.InclusionDateRange != null)
+                query = query.Where(u =>
+                                u.InclusionDate >= parameters.InclusionDateRange.Start &&
+                                u.InclusionDate <= parameters.InclusionDateRange.End);
+
+            if (parameters.LastChangeDateRange != null)
+                query = query.Where(u =>
+                                u.LastChangeDate >= parameters.LastChangeDateRange.Start &&
+                                u.LastChangeDate <= parameters.LastChangeDateRange.End);
+
+            return query.ToList();
         }
     }
 
@@ -102,8 +139,6 @@ public class UserRepository : IUserRepository, IDisposable
 
         disposed = true;
     }
-
-
 
     #endregion Disposed https://docs.microsoft.com/pt-br/dotnet/standard/garbage-collection/implementing-dispose
 }

@@ -1,4 +1,5 @@
 ﻿using Domain.Models;
+using Domain.Models.ListUser;
 
 namespace Domain.Interfaces.Service;
 
@@ -12,9 +13,7 @@ public interface IUserService
 
     Task InactivateUser(UserModel user);
 
-    Task<ListUsersResponse> ListUsers(int page);
-
-    Task<List<UserModel>> FilterUsers();
+    Task<ListUsersResponse> ListUsers(ListUsersRequest request);
 
     Task<UserModel> GetByUserId(string id);
 }
