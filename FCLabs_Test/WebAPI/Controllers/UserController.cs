@@ -1,7 +1,9 @@
 ﻿using Domain.Interfaces.Service;
-using Domain.Models.ListUser;
 using Domain.Models.UserModels;
+using Domain.Models.UserModels.ListUser;
+using Entities.Entities;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace WebAPI.Controllers;
@@ -12,19 +14,21 @@ namespace WebAPI.Controllers;
 public class UserController : ControllerBase
 {
     private readonly IUserService _userService;
+    private readonly UserManager<ApplicationUser> _userManager;
 
-    public UserController(IUserService userService)
+    public UserController(IUserService userService, UserManager<ApplicationUser> userManager)
     {
         _userService = userService ?? throw new ArgumentNullException(nameof(userService));
+        _userManager = userManager ?? throw new ArgumentNullException(nameof(userManager));
     }
 
     [HttpPost]
     [Produces("application/json")]
-    public async Task<IActionResult> AddUser(UserModel user)
+    public async Task<IActionResult> AddUser(AddUserRequest request)
     {
         try
         {
-            await _userService.AddUser(user);
+            await _userService.AddUser(request);
             return Ok("User Added");
         }
         catch (Exception ex)
@@ -52,11 +56,11 @@ public class UserController : ControllerBase
 
     [HttpDelete]
     [Produces("application/json")]
-    public async Task<IActionResult> InactivateUser(UserModel user)
+    public async Task<IActionResult> InactivateUser([FromQuery]int userId)
     {
         try
         {
-            await _userService.InactivateUser(user);
+            await _userService.InactivateUser(userId);
             return Ok("User was inactivated");
         }
         catch (Exception ex)

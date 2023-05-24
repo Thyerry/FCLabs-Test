@@ -1,12 +1,11 @@
 ﻿using Domain.Interfaces.Repository;
-using Domain.Models.ListUser;
+using Domain.Models.UserModels.ListUser;
 using Entities.Entities;
 using Entities.Enums;
 using Infrastructure.Configuration;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Win32.SafeHandles;
 using System.Runtime.InteropServices;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace Infrastructure.Repository;
 
@@ -91,6 +90,14 @@ public class UserRepository : IUserRepository, IDisposable
             return await database.User.FirstOrDefaultAsync(u => u.CPF == cpf);
         }
     }
+    public async Task<User> GetUserById(int? id)
+    {
+        using (var database = new BaseContext(_options))
+        {
+            return await database.User.FirstOrDefaultAsync(u => u.Id == id);
+        }
+    }
+
 
     public async Task Delete(User user)
     {

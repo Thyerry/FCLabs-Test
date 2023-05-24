@@ -1,12 +1,14 @@
 ﻿using AutoMapper;
 using Domain.Interfaces.Service;
-using Domain.Models;
+using Domain.Models.LoginModels;
 using Domain.Models.UserModels;
+using Domain.Models.UserModels.ListUser;
 using Entities.Entities;
 using Entities.Enums;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using WebAPI.Helpers;
 using WebAPI.Token;
 
 namespace WebAPI.Controllers;
@@ -40,18 +42,18 @@ public class LoginController : ControllerBase
     [HttpPost("CreateLoginToken")]
     public async Task<IActionResult> CreateLoginToken([FromBody] LoginRequest login)
     {
-        if (string.IsNullOrWhiteSpace(login.userName) || string.IsNullOrWhiteSpace(login.password))
+        if (string.IsNullOrWhiteSpace(login.cpf) || string.IsNullOrWhiteSpace(login.password))
             return BadRequest("The user name and the password fields cannot be blank");
 
-        var applicationUser = await _userManager.FindByNameAsync(login.userName);
+        var applicationUser = await _userManager.FindByCpfAsync(login.cpf);
         if (applicationUser == null)
-            return Unauthorized($"A user with the user name {login.userName} doesn't exist");
+            return Unauthorized($"A user with the user name {login.cpf} doesn't exist");
 
-        var validUser = await _userService.GetByUserCpf(applicationUser.CPF);
-        if (validUser.Status == (int)StatusEnum.INACTIVE)
+        var validUser = await _userService.GetUserByCpf(applicationUser.CPF);
+        if (validUser.Status == StatusEnum.INACTIVE)
             return Unauthorized("User Inactive");
 
-        var result = await _signInManager.PasswordSignInAsync(login.userName, login.password, false, false);
+        var result = await _signInManager.PasswordSignInAsync(applicationUser.UserName, login.password, false, false);
         if (!result.Succeeded)
             return Unauthorized("Wrong password");
 
@@ -72,35 +74,28 @@ public class LoginController : ControllerBase
     [HttpPost("RegisterUserLogin")]
     public async Task<IActionResult> RegisterUserLogin([FromBody] RegisterRequest request)
     {
-        if (string.IsNullOrWhiteSpace(request.Login)
-            || string.IsNullOrWhiteSpace(request.Email)
-            || string.IsNullOrWhiteSpace(request.ConfirmPassword)
-            || string.IsNullOrWhiteSpace(request.Password))
-            return BadRequest("Some of the fields are empty");
-
-        if (request.Password != request.ConfirmPassword)
-            return BadRequest("Passwords don't match");
-
         var newUser = new ApplicationUser
         {
             UserName = request.Login,
             Email = request.Email,
             CPF = request.CPF,
         };
-        var user = _mapper.Map<UserModel>(request);
+
+        var user = _mapper.Map<AddUserRequest>(request);
         try
         {
             var result = await _userManager.CreateAsync(newUser, request.Password);
-
             if (!result.Succeeded)
                 return BadRequest(result.Errors);
 
-            await _userService.AddUser(user);
+            var userExists = await _userService.GetUserByCpf(request.CPF);
+            if(userExists == null)
+                await _userService.AddUser(user);
+
             return Ok("User Registered Successfully");
         }
         catch (Exception ex)
         {
-            await _userService.Delete(user);
             await _userManager.DeleteAsync(newUser);
             return BadRequest(ex.Message);
         }

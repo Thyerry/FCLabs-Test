@@ -1,7 +1,7 @@
 ﻿using Entities.Enums;
 using System.ComponentModel;
 
-namespace Domain.Models.ListUser;
+namespace Domain.Models.UserModels.ListUser;
 
 public class ListUsersRequest
 {

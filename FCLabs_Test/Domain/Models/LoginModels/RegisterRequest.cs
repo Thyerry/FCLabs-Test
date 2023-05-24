@@ -1,4 +1,4 @@
-﻿namespace Domain.Models.UserModels;
+﻿namespace Domain.Models.LoginModels;
 
 public class RegisterRequest
 {

@@ -1,10 +1,12 @@
 using AutoMapper;
 using Domain.Interfaces.Repository;
 using Domain.Interfaces.Service;
-using Domain.Models.ListUser;
+using Domain.Models.LoginModels;
 using Domain.Models.UserModels;
+using Domain.Models.UserModels.ListUser;
 using Domain.Services;
 using Entities.Entities;
+using FluentValidation.AspNetCore;
 using Infrastructure.Configuration;
 using Infrastructure.Repository;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -81,6 +83,10 @@ var mapperConfig = new AutoMapper.MapperConfiguration(cfg =>
     cfg.CreateMap<UserModel, User>();
     cfg.CreateMap<User, UserResponse>();
     cfg.CreateMap<UserResponse, User>();
+    cfg.CreateMap<User, AddUserRequest>();
+    cfg.CreateMap<AddUserRequest, User>();
+    cfg.CreateMap<RegisterRequest, AddUserRequest>();
+    cfg.CreateMap<AddUserRequest, RegisterRequest>();
     cfg.CreateMap<UserModel, RegisterRequest>();
     cfg.CreateMap<RegisterRequest, UserModel>();
     cfg.CreateMap<ListUsersQueryParameters, ListUsersRequest>();
@@ -89,6 +95,15 @@ var mapperConfig = new AutoMapper.MapperConfiguration(cfg =>
 
 IMapper mapper = mapperConfig.CreateMapper();
 builder.Services.AddSingleton(mapper);
+#endregion
+
+#region FluentValidation    
+
+builder.Services.AddControllers().AddFluentValidation(config =>
+{
+    config.RegisterValidatorsFromAssembly(typeof(UserService).Assembly);
+});
+
 #endregion
 
 #region Cors

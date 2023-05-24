@@ -1,6 +1,6 @@
 ﻿using Domain.Models.UserModels;
 
-namespace Domain.Models.ListUser;
+namespace Domain.Models.UserModels.ListUser;
 
 public class ListUsersResponse
 {

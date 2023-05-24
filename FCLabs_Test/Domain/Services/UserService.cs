@@ -1,10 +1,12 @@
 ﻿using AutoMapper;
 using Domain.Interfaces.Repository;
 using Domain.Interfaces.Service;
-using Domain.Models.ListUser;
 using Domain.Models.UserModels;
+using Domain.Models.UserModels.ListUser;
 using Entities.Entities;
 using Entities.Enums;
+using FluentValidation;
+using System.Net.Http.Headers;
 
 namespace Domain.Services
 {
@@ -21,7 +23,7 @@ namespace Domain.Services
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         }
 
-        public async Task AddUser(UserModel user)
+        public async Task AddUser(AddUserRequest user)
         {
             var cpfValidation = await _userRepository.GetUserByCpf(user.CPF);
             if (cpfValidation != null)
@@ -34,7 +36,7 @@ namespace Domain.Services
             await _userRepository.AddUser(userMapped);
         }
 
-        public async Task<UserModel> GetByUserCpf(string cpf)
+        public async Task<UserModel> GetUserByCpf(string cpf)
         {
             var user = await _userRepository.GetUserByCpf(cpf);
             return _mapper.Map<UserModel>(user);
@@ -59,15 +61,34 @@ namespace Domain.Services
 
         public async Task UpdateUser(UserModel user)
         {
+            var currentUser = await GetUserById(user.Id);
+
+            if (currentUser.CPF != user.CPF ||
+                currentUser.Email != user.Email ||
+                currentUser.Login != user.Login ||
+                currentUser.BirthDate != user.BirthDate
+                )
+                throw new ValidationException("Trying to change one or more of the following fields that can't be changed: CPF, Email, Login, Birth Date");
+
             var userMapped = _mapper.Map<User>(user);
             userMapped.LastChangeDate = DateTime.UtcNow;
             await _userRepository.UpdateUser(userMapped);
         }
 
-        public async Task InactivateUser(UserModel user)
+        public async Task<User> GetUserById(int? Id)
         {
+            return await _userRepository.GetUserById(Id);
+        }
+
+        public async Task InactivateUser(int id)
+        {
+            var user = await GetUserById(id);
+            if (user == null)
+                throw new ValidationException("User not found!");
+
             user.Status = (int)StatusEnum.INACTIVE;
-            await UpdateUser(user);
+            user.LastChangeDate = DateTime.UtcNow;
+            await _userRepository.UpdateUser(user);
         }
 
         public async Task Delete(UserModel user)
@@ -87,6 +108,7 @@ namespace Domain.Services
 
             return queryParams;
         }
+
         private DateTimeRange? DateTimeRangeValidation(DateTime? start, DateTime? end)
         {
             if (start != null || end != null)

@@ -1,4 +1,4 @@
-﻿namespace Domain.Models.ListUser;
+﻿namespace Domain.Models.UserModels.ListUser;
 
 public class ListUsersQueryParameters
 {
