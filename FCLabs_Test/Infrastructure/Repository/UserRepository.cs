@@ -90,6 +90,7 @@ public class UserRepository : IUserRepository, IDisposable
             return await database.User.FirstOrDefaultAsync(u => u.CPF == cpf);
         }
     }
+
     public async Task<User> GetUserById(int? id)
     {
         using (var database = new BaseContext(_options))
@@ -98,6 +99,14 @@ public class UserRepository : IUserRepository, IDisposable
         }
     }
 
+    public async Task<List<User>> GetUsersById(List<int> ids)
+    {
+        using (var database = new BaseContext(_options))
+        {
+            var result = await database.User.Where(u => ids.Contains(u.Id)).ToListAsync();
+            return result;
+        }
+    }
 
     public async Task Delete(User user)
     {

@@ -13,6 +13,8 @@ public interface IUserService
 
     Task InactivateUser(int userId);
 
+    Task InactivateUsersBatch(List<int> userId);
+
     Task<ListUsersResponse> ListUsers(ListUsersRequest request);
 
     Task<UserModel> GetUserByCpf(string cpf);

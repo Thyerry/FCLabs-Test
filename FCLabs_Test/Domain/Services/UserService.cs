@@ -82,13 +82,26 @@ namespace Domain.Services
 
         public async Task InactivateUser(int id)
         {
-            var user = await GetUserById(id);
+            var user = await _userRepository.GetUserById(id);
             if (user == null)
                 throw new ValidationException("User not found!");
 
             user.Status = (int)StatusEnum.INACTIVE;
             user.LastChangeDate = DateTime.UtcNow;
             await _userRepository.UpdateUser(user);
+        }
+
+        public async Task InactivateUsersBatch(List<int> ids)
+        {
+            var users = await _userRepository.GetUsersById(ids);
+            if (!users.Any())
+                throw new ValidationException("Users not found!");
+
+            users.ForEach(async u => {
+                u.Status = (int)StatusEnum.INACTIVE;
+                u.LastChangeDate = DateTime.UtcNow;
+                await _userRepository.UpdateUser(u);
+            });
         }
 
         public async Task Delete(UserModel user)

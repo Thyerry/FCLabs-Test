@@ -11,4 +11,5 @@ public interface IUserRepository
     Task<List<User>> ListUsers(ListUsersQueryParameters parameters);
     Task<User> GetUserByCpf(string cpf);
     Task<User> GetUserById(int? id);
+    Task<List<User>> GetUsersById(List<int> ids);
 }

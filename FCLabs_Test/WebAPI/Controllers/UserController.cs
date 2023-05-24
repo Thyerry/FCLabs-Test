@@ -70,6 +70,23 @@ public class UserController : ControllerBase
         }
     }
 
+    [HttpDelete]
+    [Route("/User/Batch")]
+    [Produces("application/json")]
+    public async Task<IActionResult> InactivateUsersBatch(List<int> userId)
+    {
+        try
+        {
+            await _userService.InactivateUsersBatch(userId);
+            return Ok("Users were inactivated");
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+            throw;
+        }
+    }
+
     [HttpGet]
     [Produces("application/json")]
     public async Task<IActionResult> ListUsers([FromQuery] ListUsersRequest request)

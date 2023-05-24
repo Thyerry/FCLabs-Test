@@ -10,6 +10,7 @@ public class ListUsersRequest
     public string? Name { get; set; }
     public string? CPF { get; set; }
     public string? Login { get; set; }
+    [DefaultValue(true)]
     public bool? ReturnActive { get; set; }
     public bool? ReturnInactive { get; set; }
     public DateTime? BirthDateRangeStart { get; set; }
