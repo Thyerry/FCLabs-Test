@@ -1,4 +1,5 @@
 ﻿using Domain.Models.UserModels.ListUser;
+using Domain.Utils;
 using FluentValidation;
 
 namespace Domain.Validators;
@@ -12,7 +13,7 @@ public class ListUsersRequestValidator : AbstractValidator<ListUsersRequest>
             .WithMessage("Page numeber must be greater than 1");
 
         RuleFor(r => r.CPF)
-            .Must(BeOnlyNumeric).WithMessage("Only Numeric Characters permited")
+            .Must(ValidationMethods.BeOnlyNumeric).WithMessage("Only Numeric Characters permited")
             .MinimumLength(11).WithMessage("Invalid CPF Number");
 
         RuleFor(r => r.BirthDateRangeStart)
@@ -26,10 +27,5 @@ public class ListUsersRequestValidator : AbstractValidator<ListUsersRequest>
         RuleFor(r => r.LastChangeDateRangeStart)
             .LessThan(r => r.LastChangeDateRangeEnd)
             .WithMessage("Last change date range start can't be greater than the range end");
-    }
-
-    private bool BeOnlyNumeric(string cpf)
-    {
-        return cpf != null ? long.TryParse(cpf, out _) : true;
     }
 }

@@ -1,7 +1,6 @@
 ﻿using AutoMapper;
 using Domain.Interfaces.Service;
 using Domain.Models.LoginModels;
-using Domain.Models.UserModels;
 using Domain.Models.UserModels.ListUser;
 using Entities.Entities;
 using Entities.Enums;
@@ -89,7 +88,7 @@ public class LoginController : ControllerBase
                 return BadRequest(result.Errors);
 
             var userExists = await _userService.GetUserByCpf(request.CPF);
-            if(userExists == null)
+            if (userExists == null)
                 await _userService.AddUser(user);
 
             return Ok("User Registered Successfully");
@@ -99,6 +98,35 @@ public class LoginController : ControllerBase
             await _userManager.DeleteAsync(newUser);
             return BadRequest(ex.Message);
         }
+    }
 
+    [AllowAnonymous]
+    [Produces("application/json")]
+    [HttpPost("RecoverPassword")]
+    public async Task<IActionResult> RecoverPassword([FromBody] RecoverPasswordRequest request)
+    {
+        var user = await _userService.GetUserByCpf(request.CPF);
+        var userLogin = await _userManager.FindByCpfAsync(request.CPF);
+
+        if (user == null && userLogin == null)
+            return BadRequest("User doesn't exist");
+
+        if (request.Email != userLogin.Email ||
+                request.CPF != userLogin.CPF ||
+                request.Name != user.Name ||
+                request.Login != userLogin.UserName ||
+                request.BirthDate.ToString("dd/MM/yyyy") != user.BirthDate?.ToString("dd/MM/yyyy") ||
+                request.MotherName != user.MotherName)
+            return BadRequest("One or more fields don't match with your register");
+
+        var resultRemove = await _userManager.RemovePasswordAsync(userLogin);
+        if (!resultRemove.Succeeded)
+            return BadRequest("Some error occurred on password reset");
+
+        var resultChange = await _userManager.AddPasswordAsync(userLogin, request.Password);
+        if (!resultChange.Succeeded)
+            return BadRequest("Some error occurred on password reset");
+
+        return Ok("Password Recovered");
     }
 }
