@@ -12,7 +12,6 @@ using Infrastructure.Repository;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using System.Text;
 using WebAPI.Token;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -26,6 +25,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 #region Database
+
 builder.Services.AddDbContext<BaseContext>(options =>
             options.UseSqlServer(
                 builder.Configuration.GetConnectionString("DefaultConnection")));
@@ -33,9 +33,11 @@ builder.Services.AddDbContext<BaseContext>(options =>
 builder.Services.AddDefaultIdentity<ApplicationUser>
     (options => options.SignIn.RequireConfirmedAccount = false)
     .AddEntityFrameworkStores<BaseContext>();
-#endregion
+
+#endregion Database
 
 #region Jwt
+
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
              .AddJwtBearer(option =>
              {
@@ -65,18 +67,21 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                      }
                  };
              });
-#endregion
+
+#endregion Jwt
 
 #region Dependency injections
+
 // Service
 builder.Services.AddSingleton<IUserService, UserService>();
 
 // Repository
 builder.Services.AddSingleton<IUserRepository, UserRepository>();
 
-#endregion
+#endregion Dependency injections
 
 #region Mapper
+
 var mapperConfig = new AutoMapper.MapperConfiguration(cfg =>
 {
     cfg.CreateMap<User, UserModel>();
@@ -95,21 +100,23 @@ var mapperConfig = new AutoMapper.MapperConfiguration(cfg =>
 
 IMapper mapper = mapperConfig.CreateMapper();
 builder.Services.AddSingleton(mapper);
-#endregion
 
-#region FluentValidation    
+#endregion Mapper
+
+#region FluentValidation
 
 builder.Services.AddControllers().AddFluentValidation(config =>
 {
     config.RegisterValidatorsFromAssembly(typeof(UserService).Assembly);
 });
 
-#endregion
+#endregion FluentValidation
 
 #region Cors
-builder.Services.AddCors();
-#endregion
 
+builder.Services.AddCors();
+
+#endregion Cors
 
 var app = builder.Build();
 
@@ -126,7 +133,6 @@ app.UseCors(c =>
     c.AllowAnyMethod();
     c.AllowAnyOrigin();
 });
-
 
 app.UseHttpsRedirection();
 

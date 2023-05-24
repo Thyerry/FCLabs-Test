@@ -102,4 +102,20 @@ public class UserController : ControllerBase
             throw;
         }
     }
+    [HttpGet]
+    [Route("/User/Export")]
+    [Produces("application/json")]
+    public async Task<IActionResult> ListUsers([FromQuery] ExportListUsersRequest request)
+    {
+        try
+        {
+            var fileResult = await _userService.ExportListUsers(request);
+            return File(fileResult.Stream, fileResult.Headers, fileResult.FileName);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+            throw;
+        }
+    }
 }

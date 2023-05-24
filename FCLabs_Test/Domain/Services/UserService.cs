@@ -3,10 +3,10 @@ using Domain.Interfaces.Repository;
 using Domain.Interfaces.Service;
 using Domain.Models.UserModels;
 using Domain.Models.UserModels.ListUser;
+using Domain.Utils;
 using Entities.Entities;
 using Entities.Enums;
 using FluentValidation;
-using System.Net.Http.Headers;
 
 namespace Domain.Services
 {
@@ -97,7 +97,8 @@ namespace Domain.Services
             if (!users.Any())
                 throw new ValidationException("Users not found!");
 
-            users.ForEach(async u => {
+            users.ForEach(async u =>
+            {
                 u.Status = (int)StatusEnum.INACTIVE;
                 u.LastChangeDate = DateTime.UtcNow;
                 await _userRepository.UpdateUser(u);
@@ -108,6 +109,16 @@ namespace Domain.Services
         {
             var userMapped = _mapper.Map<User>(user);
             await _userRepository.Delete(userMapped);
+        }
+
+        public async Task<ExportListUsersResult> ExportListUsers(ExportListUsersRequest request)
+        {
+            var queryParameters = MapRequestIntoQuery(request);
+            var users = await _userRepository.ListUsers(queryParameters);
+            if (!users.Any())
+                throw new ValidationException("The query didn't return any user");
+
+            return FileUtils.ExportListUsers(users, request.ExportFormat);
         }
 
         private ListUsersQueryParameters MapRequestIntoQuery(ListUsersRequest request)
