@@ -1,5 +1,5 @@
-﻿using Domain.Models;
-using Domain.Models.ListUser;
+﻿using Domain.Models.ListUser;
+using Domain.Models.UserModels;
 
 namespace Domain.Interfaces.Service;
 
@@ -15,5 +15,5 @@ public interface IUserService
 
     Task<ListUsersResponse> ListUsers(ListUsersRequest request);
 
-    Task<UserModel> GetByUserId(string id);
+    Task<UserModel> GetByUserCpf(string cpf);
 }

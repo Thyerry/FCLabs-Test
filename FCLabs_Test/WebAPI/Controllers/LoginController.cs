@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Domain.Interfaces.Service;
 using Domain.Models;
+using Domain.Models.UserModels;
 using Entities.Entities;
 using Entities.Enums;
 using Microsoft.AspNetCore.Authorization;
@@ -46,7 +47,7 @@ public class LoginController : ControllerBase
         if (applicationUser == null)
             return Unauthorized($"A user with the user name {login.userName} doesn't exist");
 
-        var validUser = await _userService.GetByUserId(applicationUser.Id);
+        var validUser = await _userService.GetByUserCpf(applicationUser.CPF);
         if (validUser.Status == (int)StatusEnum.INACTIVE)
             return Unauthorized("User Inactive");
 
@@ -69,33 +70,31 @@ public class LoginController : ControllerBase
     [AllowAnonymous]
     [Produces("application/json")]
     [HttpPost("RegisterUserLogin")]
-    public async Task<IActionResult> RegisterUserLogin([FromBody] UserModel user)
+    public async Task<IActionResult> RegisterUserLogin([FromBody] RegisterRequest request)
     {
-        if (string.IsNullOrWhiteSpace(user.Login)
-            || string.IsNullOrWhiteSpace(user.Email)
-            || string.IsNullOrWhiteSpace(user.ConfirmPassword)
-            || string.IsNullOrWhiteSpace(user.Password))
+        if (string.IsNullOrWhiteSpace(request.Login)
+            || string.IsNullOrWhiteSpace(request.Email)
+            || string.IsNullOrWhiteSpace(request.ConfirmPassword)
+            || string.IsNullOrWhiteSpace(request.Password))
             return BadRequest("Some of the fields are empty");
 
-        if (user.Password != user.ConfirmPassword)
+        if (request.Password != request.ConfirmPassword)
             return BadRequest("Passwords don't match");
 
         var newUser = new ApplicationUser
         {
-            UserName = user.Login,
-            Email = user.Email,
-            CPF = user.CPF,
+            UserName = request.Login,
+            Email = request.Email,
+            CPF = request.CPF,
         };
-
+        var user = _mapper.Map<UserModel>(request);
         try
         {
-            var result = await _userManager.CreateAsync(newUser, user.Password);
+            var result = await _userManager.CreateAsync(newUser, request.Password);
 
             if (!result.Succeeded)
                 return BadRequest(result.Errors);
 
-            var userRegistered = await _userManager.FindByEmailAsync(user.Email);
-            user.UserId = userRegistered.Id;
             await _userService.AddUser(user);
             return Ok("User Registered Successfully");
         }

@@ -1,8 +1,8 @@
 using AutoMapper;
 using Domain.Interfaces.Repository;
 using Domain.Interfaces.Service;
-using Domain.Models;
 using Domain.Models.ListUser;
+using Domain.Models.UserModels;
 using Domain.Services;
 using Entities.Entities;
 using Infrastructure.Configuration;
@@ -79,6 +79,10 @@ var mapperConfig = new AutoMapper.MapperConfiguration(cfg =>
 {
     cfg.CreateMap<User, UserModel>();
     cfg.CreateMap<UserModel, User>();
+    cfg.CreateMap<User, UserResponse>();
+    cfg.CreateMap<UserResponse, User>();
+    cfg.CreateMap<UserModel, RegisterRequest>();
+    cfg.CreateMap<RegisterRequest, UserModel>();
     cfg.CreateMap<ListUsersQueryParameters, ListUsersRequest>();
     cfg.CreateMap<ListUsersRequest, ListUsersQueryParameters>();
 });

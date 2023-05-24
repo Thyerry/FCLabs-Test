@@ -84,14 +84,6 @@ public class UserRepository : IUserRepository, IDisposable
         }
     }
 
-    public async Task<User> GetByUserId(string userId)
-    {
-        using (var database = new BaseContext(_options))
-        {
-            return await database.User.FirstOrDefaultAsync(u => u.UserId == userId);
-        }
-    }
-
     public async Task<User> GetUserByCpf(string cpf)
     {
         using (var database = new BaseContext(_options))

@@ -1,6 +1,6 @@
 ﻿using Domain.Interfaces.Service;
-using Domain.Models;
 using Domain.Models.ListUser;
+using Domain.Models.UserModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -68,7 +68,7 @@ public class UserController : ControllerBase
 
     [HttpGet]
     [Produces("application/json")]
-    public async Task<IActionResult> ListUsers(ListUsersRequest request)
+    public async Task<IActionResult> ListUsers([FromQuery] ListUsersRequest request)
     {
         try
         {
