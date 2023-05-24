@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using Entities.Enums;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Entities.Entities;
 
@@ -6,7 +7,7 @@ namespace Entities.Entities;
 public class User
 {
     public int Id { get; set; }
-    public int Status { get; set; }
+    public StatusEnum Status { get; set; }
     public string CPF { get; set; }
     public string Name { get; set; }
     public string Login { get; set; }

@@ -30,7 +30,7 @@ namespace Domain.Services
                 throw new Exception($"CPF: {user.CPF} already registered");
 
             var userMapped = _mapper.Map<User>(user);
-            userMapped.Status = (int)StatusEnum.ACTIVE;
+            userMapped.Status = StatusEnum.ACTIVE;
             userMapped.InclusionDate = DateTime.UtcNow;
             userMapped.LastChangeDate = DateTime.UtcNow;
             await _userRepository.AddUser(userMapped);
@@ -86,7 +86,7 @@ namespace Domain.Services
             if (user == null)
                 throw new ValidationException("User not found!");
 
-            user.Status = (int)StatusEnum.INACTIVE;
+            user.Status = StatusEnum.INACTIVE;
             user.LastChangeDate = DateTime.UtcNow;
             await _userRepository.UpdateUser(user);
         }
@@ -99,7 +99,7 @@ namespace Domain.Services
 
             users.ForEach(async u =>
             {
-                u.Status = (int)StatusEnum.INACTIVE;
+                u.Status = StatusEnum.INACTIVE;
                 u.LastChangeDate = DateTime.UtcNow;
                 await _userRepository.UpdateUser(u);
             });

@@ -36,9 +36,9 @@ public class UserRepository : IUserRepository, IDisposable
             if (parameters.ReturnActive != parameters.ReturnInactive)
             {
                 if (parameters.ReturnActive)
-                    query = query.Where(u => u.Status == (int)StatusEnum.ACTIVE);
+                    query = query.Where(u => u.Status == StatusEnum.ACTIVE);
                 else
-                    query = query.Where(u => u.Status == (int)StatusEnum.INACTIVE);
+                    query = query.Where(u => u.Status == StatusEnum.INACTIVE);
             }
 
             if (!string.IsNullOrWhiteSpace(parameters.Name))

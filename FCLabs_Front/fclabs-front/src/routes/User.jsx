@@ -19,6 +19,9 @@ const User = () => {
         setCurrentPage(response.data.currentPage);
     }
 
+    const handleSearch = (queryObject) => {
+    }
+
     useEffect(() => {
         async function getUsersList() {
           setLoading(true);
@@ -60,27 +63,30 @@ const User = () => {
     return(
         <div>
             <h2>Lista de Usuários</h2>
-            <div>
-                <SearchForm />
-                <div>Essa pesquisa retornou {totalUsers} usuários</div>
-            </div>
-            {
-                !loading && 
-                <UserTable 
-                    users={users} 
-                    edit={() =>  console.log('edição')}
-                    inactivate={() => console.log('inativação')}
-                />
-            }
+            <div>Essa pesquisa retornou {totalUsers} usuários</div>
+            <div className="search-user-container">
+                <SearchForm handleSearchCallback={handleSearch}/>
+                <div>
 
-            <Pagination 
-                currentPage={currentPage}
-                totalPages={totalPages}
-                canNextPage={true}
-                canPreviousPage={true}
-                previousPage={previousPage}
-                nextPage={nextPage}
-            />
+                {
+                    !loading && 
+                    <UserTable 
+                        users={users} 
+                        edit={() =>  console.log('edição')}
+                        inactivate={() => console.log('inativação')}
+                    />
+                }
+
+                <Pagination 
+                    currentPage={currentPage}
+                    totalPages={totalPages}
+                    canNextPage={true}
+                    canPreviousPage={true}
+                    previousPage={previousPage}
+                    nextPage={nextPage}
+                />
+                </div>
+            </div>
         </div>
     )
 }
