@@ -14,9 +14,7 @@ const User = () => {
     const [query, setQuery] = useState('');
 
     const callUserEndpoint = async (page, query) => {
-        console.log(`pagina ${page}, query ${query}`)
         const response = await api.get(`/User?page=${page}${query}`);
-        console.log(response.data);
         setUsers(response.data.users);
         setTotalPages(response.data.totalPages);
         setTotalUsers(response.data.totalUsers);
@@ -26,7 +24,6 @@ const User = () => {
     const handleSearch = async (queryObject) => {
         const listQuery = apiUtils.mountListQuery(queryObject);
         setQuery(listQuery);
-        console.log(`calling handleSearch: page = ${queryObject.page}`)
         setCurrentPage(1);
         setLoading(true);
         await callUserEndpoint(currentPage, query);
@@ -74,7 +71,7 @@ const User = () => {
         return !loading ? (
                 <UserTable 
                     users={users} 
-                    edit={() =>  console.log('edição')}
+                    edit={() => console.log('edit')}
                     inactivate={() => console.log('inativação')}
                 />
         ) : <></>

@@ -1,6 +1,7 @@
 /* eslint-disable react/jsx-key */
 import { useMemo } from 'react';
 import { useTable } from 'react-table';
+import { Link } from 'react-router-dom'
 
 import './UserTable.scss'
 
@@ -60,10 +61,22 @@ const UserTable = ( { users }) => {
       },
       {
         Header: 'Ações',
-        Cell: () => (
+        Cell: ({cell}) => (
           <div>
-            <button className="action-button-edit">✍</button>
-            <button className="action-button-delete">❌</button>
+            <Link to={{
+              pathname: "../manage-user",
+              state : {
+                user: cell.row.original,
+              }
+            }}>  
+              <button className="action-button-edit">✍</button>
+            </Link>
+            <button 
+              className="action-button-delete"
+              onClick={() => console.log(cell.row.original.id)}
+              >
+                ❌
+            </button>
           </div>
         ),
       },
