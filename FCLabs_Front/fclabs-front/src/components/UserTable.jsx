@@ -4,7 +4,7 @@ import { useTable } from 'react-table';
 
 import './UserTable.scss'
 
-const UserTable = ( { users, loading }) => {
+const UserTable = ( { users }) => {
   const data = useMemo(
     () => users,
     []
@@ -17,10 +17,47 @@ const UserTable = ( { users, loading }) => {
       { Header: 'Email', accessor: 'email' },
       { Header: 'Telefone', accessor: 'phone' },
       { Header: 'Login', accessor: 'login', },
-      { Header: 'Situação', accessor: 'status', Cell:({value}) => <label>{value == 1 ? 'Ativo': value == 2 ? 'Inativo' : 'Bloqueado'}</label>},
-      { Header: 'Nascimento', accessor: 'birthDate', },
-      { Header: 'Adicionado', accessor: 'inclusionDate', },
-      { Header: 'Ultima Alteração', accessor: 'lastChangeDate', },
+      { 
+        Header: 'Situação', 
+        accessor: 'status', 
+        Cell:({value}) => {
+          return(
+            <label>
+              {value == 1 ? 'Ativo': value == 2 ? 'Inativo' : 'Bloqueado'}
+            </label>
+          )
+        }},
+      { 
+        Header: 'Nascimento', 
+        accessor: 'birthDate',
+        Cell: ({value}) => {
+          return (<label>
+            {value.slice(0, 10).split('-').reverse().join('/')}
+          </label>)
+        }
+      },
+      { 
+        Header: 'Adicionado', 
+        accessor: 'inclusionDate', 
+        Cell: ({value}) => {
+          return (
+            <label>
+              {value.slice(0, 10).split('-').reverse().join('/')}
+            </label>
+          )
+        }
+      },
+      { 
+        Header: 'Ultima Alteração',
+        accessor: 'lastChangeDate',
+        Cell: ({value}) => {
+          return (
+            <label>
+              {value.slice(0, 10).split('-').reverse().join('/')}
+            </label>
+          )
+        }
+      },
       {
         Header: 'Ações',
         Cell: () => (
