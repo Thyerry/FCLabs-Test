@@ -3,30 +3,41 @@ import api from "../api";
 import UserTable from "../components/UserTable";
 import Pagination from "../components/Pagination";
 import SearchForm from "../components/SearchForm";
+import * as apiUtils from "../apiUtils"
 
 const User = () => {
     const [users, setUsers] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
     const [totalUsers, setTotalUsers] = useState(0);
-    const [loading, setLoading] = useState(false)
+    const [loading, setLoading] = useState(false);
+    const [query, setQuery] = useState('');
 
-    const callUserEndpoint = async (page) => {
-        const response = await api.get(`/User?page=${page}`);
+    const callUserEndpoint = async (page, query) => {
+        console.log(`pagina ${page}, query ${query}`)
+        const response = await api.get(`/User?page=${page}${query}`);
+        console.log(response.data);
         setUsers(response.data.users);
         setTotalPages(response.data.totalPages);
         setTotalUsers(response.data.totalUsers);
         setCurrentPage(response.data.currentPage);
     }
 
-    const handleSearch = (queryObject) => {
+    const handleSearch = async (queryObject) => {
+        const listQuery = apiUtils.mountListQuery(queryObject);
+        setQuery(listQuery);
+        console.log(`calling handleSearch: page = ${queryObject.page}`)
+        setCurrentPage(1);
+        setLoading(true);
+        await callUserEndpoint(currentPage, query);
+        setLoading(false);
     }
 
     useEffect(() => {
         async function getUsersList() {
           setLoading(true);
           try{
-            await callUserEndpoint(currentPage)
+            await callUserEndpoint(currentPage, query)
             setLoading(false);
           } catch({err}) {
             console.log(err);
@@ -40,7 +51,7 @@ const User = () => {
         if(currentPage < totalPages) {
             setLoading(true);
             try{
-                await callUserEndpoint(currentPage + 1)
+                await callUserEndpoint(currentPage + 1, query)
                 setLoading(false);
             } catch({err}) {
                 console.log(err);
@@ -52,14 +63,22 @@ const User = () => {
         if(currentPage > 1) {
             setLoading(true);
             try{
-                await callUserEndpoint(currentPage - 1)
-                setLoading(false);
+                await callUserEndpoint(currentPage - 1, query)
             } catch({err}) {
                 console.log(err);
             }
+            setLoading(false);
         }
     }
-
+    const tableUpdate = () => {
+        return !loading ? (
+                <UserTable 
+                    users={users} 
+                    edit={() =>  console.log('edição')}
+                    inactivate={() => console.log('inativação')}
+                />
+        ) : <></>
+    }
     return(
         <div>
             <h2>Lista de Usuários</h2>
@@ -67,16 +86,7 @@ const User = () => {
             <div className="search-user-container">
                 <SearchForm handleSearchCallback={handleSearch}/>
                 <div>
-
-                {
-                    !loading && 
-                    <UserTable 
-                        users={users} 
-                        edit={() =>  console.log('edição')}
-                        inactivate={() => console.log('inativação')}
-                    />
-                }
-
+                {tableUpdate()}
                 <Pagination 
                     currentPage={currentPage}
                     totalPages={totalPages}

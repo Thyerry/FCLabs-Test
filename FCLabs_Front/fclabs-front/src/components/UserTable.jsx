@@ -4,7 +4,7 @@ import { useTable } from 'react-table';
 
 import './UserTable.scss'
 
-const UserTable = ( { users }) => {
+const UserTable = ( { users, loading }) => {
   const data = useMemo(
     () => users,
     []
@@ -17,7 +17,7 @@ const UserTable = ( { users }) => {
       { Header: 'Email', accessor: 'email' },
       { Header: 'Telefone', accessor: 'phone' },
       { Header: 'Login', accessor: 'login', },
-      { Header: 'Situação', accessor: 'status', },
+      { Header: 'Situação', accessor: 'status', Cell:({value}) => <label>{value == 1 ? 'Ativo': value == 2 ? 'Inativo' : 'Bloqueado'}</label>},
       { Header: 'Nascimento', accessor: 'birthDate', },
       { Header: 'Adicionado', accessor: 'inclusionDate', },
       { Header: 'Ultima Alteração', accessor: 'lastChangeDate', },

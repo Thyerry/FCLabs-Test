@@ -4,7 +4,7 @@ import './SearchForm.scss'
 
 const SearchForm = ({ handleSearchCallback }) => {
   const [name, setName] = useState('');
-  const [status, setStatus] = useState('');
+  const [status, setStatus] = useState('1');
   const [cpf, setCpf] = useState('');
   const [login, setLogin] = useState('');
   const [birthDateRangeStart, setBirthDateRangeStart] = useState('');
@@ -16,7 +16,6 @@ const SearchForm = ({ handleSearchCallback }) => {
   const [ageRange, setAgeRange] = useState('');
 
   const handleSearch = () => {
-    // Lógica para buscar usuários com base nos filtros selecionados
     handleSearchCallback({
       page: 1,
       name,
@@ -59,6 +58,7 @@ const SearchForm = ({ handleSearchCallback }) => {
           value={login}
           onChange={(e) => setLogin(e.target.value)}
         />
+
         <select className="age-range-select" value={ageRange} onChange={(e) => setAgeRange(e.target.value)}>
           <option value="">Selecione a faixa etária</option>
           <option value="1">Maior que 18 e menor que 26</option>
@@ -68,12 +68,32 @@ const SearchForm = ({ handleSearchCallback }) => {
           <option value="5">Maior que 40</option>
         </select>
 
-        <select className="status-select" value={status} onChange={(e) => setStatus(e.target.value)}>
-          <option value="">Selecione o status</option>
-          <option value="1">Ativo</option>
-          <option value="2">Inativo</option>
-          <option value="3">Bloqueado</option>
-        </select>
+      <div className="status-checkboxes">
+        <label>
+          <input
+            type="checkbox"
+            checked={status.includes("1")}
+            onChange={(e) =>
+              setStatus(
+                e.target.checked ? [...status, "1"] : status.filter((s) => s !== "1")
+              )
+            }
+          />
+          Ativo
+        </label>
+        <label>
+          <input
+            type="checkbox"
+            checked={status.includes("2")}
+            onChange={(e) =>
+              setStatus(
+                e.target.checked ? [...status, "2"] : status.filter((s) => s !== "2")
+              )
+            }
+          />
+          Inativo
+        </label>
+      </div>
       </div>
 
       <DateFilter 
